@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@layer utilities {
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 3s ease-in-out infinite;
+  }
+}
+
+/* Garante que o fundo da página siga o tom cinza muito claro das suas imagens */
+body {
+  @apply bg-gray-50/50 antialiased text-gray-900;
+}
