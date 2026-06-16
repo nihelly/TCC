@@ -1,109 +1,76 @@
-import React, { useState } from 'react';
-import { User, Settings, Star } from 'lucide-react';
+import React from 'react';
+import { Settings, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Perfil() {
+export default function Perfil({ perfil, metrics, isDono, isFollowing, toggleFollow }) {
   const navigate = useNavigate();
-  // Estado para controlar a aba ativa exatamente como no design (POSTS ou REPOSTS)
-  const [abaAtiva, setAbaAtiva] = useState('posts');
 
   return (
-    <div className="max-w-[800px] mx-auto pt-4 pb-20 px-4 animate-in fade-in duration-500">
+    <div className="w-full max-w-[600px] mx-auto md:pt-4">
       
-      {/* HEADER DA PÁGINA DE PERFIL */}
-      <div className="flex items-center justify-between mb-8">
-        {/* Lado Esquerdo: Texto PERFIL idêntico ao restante do app */}
-        <span className="text-[11px] font-bold tracking-[0.2em] text-gray-800 uppercase">
-          Perfil
-        </span>
-        
-        {/* Lado Direito: Botões de Configurações e Favoritos */}
-        <div className="flex items-center gap-5 text-gray-500">
-          <Star size={20} className="cursor-pointer hover:text-black transition-colors" onClick={() => navigate('/')} />
-           <Settings 
-            size={20} 
-            className="cursor-pointer hover:text-black transition-colors" 
-            onClick={() => navigate('/')}
-          />
+      {/* 1. TOP BAR DO PERFIL */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50 sticky top-0 bg-white/80 backdrop-blur-md z-10">
+        <span className="text-[16px] font-bold text-gray-950 tracking-tight">@{perfil?.handle}</span>
+        <div className="flex items-center gap-4 text-gray-800">
+          {isDono && (
+            <button onClick={() => navigate('/configuracoes')} className="hover:opacity-70 transition-opacity cursor-pointer">
+              <Settings size={22} strokeWidth={2} />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* DETALHES DO USUÁRIO CENTRALIZADOS */}
-      <div className="flex flex-col items-center text-center mt-12 mb-10">
-        {/* Círculo com Ícone de Usuário */}
-        <div className="w-24 h-24 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mb-4 shadow-sm">
-          <User size={44} className="text-gray-300" />
-        </div>
-
-        {/* Username */}
-        <h2 className="text-[14px] font-medium text-gray-900 mb-4">
-          @aluno.teste
-        </h2>
-
-        {/* CONTADORES (Estatísticas horizontais) */}
-        <div className="flex items-center gap-6 text-[13px] text-gray-500 mb-4 font-normal">
-          <div>
-            posts <span className="font-semibold text-gray-800 ml-0.5">0</span>
+      {/* 2. HEADER: AVATAR + METRICAS */}
+      <div className="p-5 space-y-4">
+        <div className="flex items-center justify-between gap-6">
+          {/* FOTO DO USUÁRIO */}
+          <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-100 rounded-full flex-shrink-0 overflow-hidden border border-gray-200 shadow-inner">
+            {perfil?.avatar_url ? (
+              <img src={perfil.avatar_url} alt={perfil.nome} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-400"><User size={40} /></div>
+            )}
           </div>
-          <div>
-            seguidores <span className="font-semibold text-gray-800 ml-0.5">0</span>
-          </div>
-          <div>
-            seguindo <span className="font-semibold text-gray-800 ml-0.5">0</span>
+
+          {/* CONTADORES (ESTILO INSTAGRAM) */}
+          <div className="flex-1 flex justify-around text-center">
+            <div className="flex flex-col"><span className="text-[16px] font-bold text-gray-950">{metrics?.posts || 0}</span><span className="text-[12px] text-gray-400">posts</span></div>
+            <div className="flex flex-col"><span className="text-[16px] font-bold text-gray-950">{metrics?.seguidores || 0}</span><span className="text-[12px] text-gray-400">seguidores</span></div>
+            <div className="flex flex-col"><span className="text-[16px] font-bold text-gray-950">{metrics?.seguindo || 0}</span><span className="text-[12px] text-gray-400">seguindo</span></div>
           </div>
         </div>
 
-        {/* Biografia */}
-        <p className="text-[12px] text-gray-400 font-light">
-          biografia
-        </p>
-      </div>
+        {/* 3. BIOGRAFIA */}
+        <div className="text-[14px] space-y-0.5">
+          <h2 className="font-bold text-gray-950">{perfil?.nome}</h2>
+          <p className="text-gray-600 font-light leading-relaxed whitespace-pre-line text-[13px]">
+            {perfil?.biografia || 'Nenhuma apresentação disponível ainda.'}
+          </p>
+        </div>
 
-      {/* SELETOR DE ABAS (POSTS / REPOSTS) */}
-      <div className="border-t border-gray-100 flex justify-center mb-6">
-        <div className="flex gap-16 -mt-[1px]">
-          {/* Aba POSTS */}
-          <button
-            onClick={() => setAbaAtiva('posts')}
-            className={`py-3 px-8 text-[11px] font-bold tracking-wider transition-all border-t-2 uppercase
-              ${abaAtiva === 'posts' 
-                ? 'border-black text-black' 
-                : 'border-transparent text-gray-400 hover:text-gray-600'
-              }`}
-          >
-            Posts
-          </button>
-
-          {/* Aba REPOSTS */}
-          <button
-            onClick={() => setAbaAtiva('reposts')}
-            className={`py-3 px-8 text-[11px] font-bold tracking-wider transition-all border-t-2 uppercase
-              ${abaAtiva === 'reposts' 
-                ? 'border-black text-black' 
-                : 'border-transparent text-gray-400 hover:text-gray-600'
-              }`}
-          >
-            Reposts
-          </button>
+        {/* 4. BOTÕES DE AÇÃO */}
+        <div className="pt-2">
+          {isDono ? (
+            <button 
+              onClick={() => navigate('/editar-perfil')} 
+              className="w-full bg-gray-100 hover:bg-gray-200/80 text-gray-950 text-[13px] font-semibold py-2 rounded-xl transition-all cursor-pointer text-center"
+            >
+              Editar perfil
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={toggleFollow} className={`flex-1 text-[13px] font-bold py-2 rounded-xl text-center transition-all cursor-pointer ${isFollowing ? 'bg-gray-100 text-gray-800' : 'bg-black text-white'}`}>
+                {isFollowing ? 'Seguindo' : 'Seguir'}
+              </button>
+              <button onClick={() => navigate('/mensagens')} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-950 text-[13px] font-semibold py-2 rounded-xl text-center cursor-pointer">
+                Mensagem
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* CONTAINER DE CONTEÚDO (Cards de post vazios iguazinhas ao seu print) */}
-      <div className="space-y-4">
-        {abaAtiva === 'posts' ? (
-          <>
-            {/* Bloco Placeholder de Post 1 */}
-            <div className="w-full h-32 bg-gray-50/50 border border-gray-100 rounded-[1.5rem] transition-all"></div>
-            {/* Bloco Placeholder de Post 2 */}
-            <div className="w-full h-32 bg-gray-50/50 border border-gray-100 rounded-[1.5rem] transition-all"></div>
-          </>
-        ) : (
-          <div className="text-center py-12 text-[12px] text-gray-400 italic">
-            Nenhum repost compartilhado ainda.
-          </div>
-        )}
-      </div>
-
+      {/* SEÇÃO DAS ABAS E FEEDS ABAIXO... */}
     </div>
   );
 }
