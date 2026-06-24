@@ -76,11 +76,11 @@ export default function Configuracoes() {
                   <span>Alterar senha</span>
                 </div>
                 <button 
-  onClick={() => navigate('/fluxo-senha')}
-  className="bg-gray-50 hover:bg-gray-100 border border-gray-100 px-4 py-1.5 rounded-xl font-bold text-gray-700 text-[11px] transition-colors"
->
-  alterar
-</button>
+                  onClick={() => navigate('/fluxo-senha')}
+                  className="bg-gray-50 hover:bg-gray-100 border border-gray-100 px-4 py-1.5 rounded-xl font-bold text-gray-700 text-[11px] transition-colors"
+                >
+                  alterar
+                </button>
               </div>
 
               {/* Verificação em duas etapas */}
@@ -190,7 +190,7 @@ export default function Configuracoes() {
           {abaAberta === 'modoNocturno' && (
             <div className="p-5 bg-white border-t border-gray-50 animate-in slide-in-from-top-2 duration-200">
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                Alterna entre o tema claro e escuro do Conecta. Sua preferência fica salva neste dispositivo.
+                Alterna entre o tema claro e escuro do EduConnect. Sua preferência fica salva neste dispositivo.
               </p>
             </div>
           )}

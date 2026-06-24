@@ -8,7 +8,7 @@ export function MainLayout({ children }) {
       {/* 1. Componente de Navegação Lateral */}
       <Sidebar />
 
-      {/* 2. Container do Conteúdo Principal (Sem Header) */}
+      {/* 2. Container do Conteúdo Principal */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
         
         {/* 3. Área interna onde as páginas (Feed, Configurações, Perfil) são renderizadas */}

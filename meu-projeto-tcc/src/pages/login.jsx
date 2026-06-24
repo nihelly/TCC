@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
-import { toast } from 'sonner'; // Importar ferramenta de alertas
+import { toast } from 'sonner';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -29,12 +28,10 @@ export default function Login() {
 
       if (error) throw error;
 
-      {/* COMPLIMENTO/CUMPRIMENTO AO ENTRAR COM SUCESSO */}
-      toast.message('Bem-vindo de volta ao Conecta!', );
+      toast.message('Bem-vindo de volta ao EduConnect!');
       
       navigate('/feed');
     } catch (error) {
-      {/* SITUAÇÃO DE ERRO NO LOGIN */}
       toast.error('Falha na autenticação', {
         description: error.message === 'Invalid login credentials' 
           ? 'E-mail institucional ou senha incorretos.' 
@@ -50,20 +47,20 @@ export default function Login() {
       {/* DESIGN FIEL À FOTO ENVIADA */}
       <div className="w-full max-w-[440px] bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.015)] border border-gray-100 p-10 flex flex-col items-center">
         
-        {/* Ícone do Globo Superior */}
-        <div className="text-gray-800 mb-6">
-          <Globe size={42} strokeWidth={1.5} />
+        {/* Logo EduConnect */}
+        <div className="mb-6">
+          <img src="/src/assets/logo-educonnect.png" alt="EduConnect" className="w-20 h-20 object-contain mx-auto" />
         </div>
 
         {/* Textos Principais */}
         <h1 className="text-[20px] font-bold text-gray-950 text-center mb-1 tracking-tight">
-          Seja bem-vindo à Conecta!
+          Seja bem-vindo ao EduConnect!
         </h1>
         <p className="text-[12px] text-gray-400 text-center mb-8 font-light">
           por favor, insira a senha.
         </p>
 
-        {/* Formulário com IDs de Acessibilidade corrigidos */}
+        {/* Formulário com IDs de Acessibilidade */}
         <form onSubmit={lidarComLogin} className="w-full space-y-5">
           {/* E-mail */}
           <div className="space-y-1.5">
@@ -99,8 +96,10 @@ export default function Login() {
 
           {/* Links Inferiores */}
           <div className="flex items-center justify-between text-[11px] text-gray-400 font-light px-1 pt-1">
-            <span className="cursor-pointer hover:text-gray-600 hover:underline transition-all" 
-            onClick={() => navigate('/fluxo-senha')}>
+            <span 
+              className="cursor-pointer hover:text-gray-600 hover:underline transition-all" 
+              onClick={() => navigate('/fluxo-senha')}
+            >
               Esqueci minha senha
             </span>
             <span className="cursor-pointer hover:text-gray-600 hover:underline transition-all">

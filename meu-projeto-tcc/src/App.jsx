@@ -5,8 +5,11 @@ import { Toaster } from 'sonner';
 // Importação dos Layouts
 import { MainLayout } from './layouts/MainLayout';
 
+// Importação do componente de proteção de rota
+import { RotaProtegida } from './components/RotaProtegida';
+
 // Importação das Páginas
-import Login from './pages/Login';
+import Login from './pages/login';
 import FluxoSenha from './pages/FluxoSenha';
 import Feed from './pages/Feed';
 import CriarPost from './pages/CriarPost';
@@ -15,11 +18,8 @@ import Notificacoes from './pages/Notificacoes';
 import CriarAviso from './pages/CriarAviso';
 import Perfil from './pages/Perfil';
 import EditarPerfil from './pages/EditarPerfil';
-
-// Componente simples de simulação de proteção de rota
-const RotaProtegida = ({ children }) => {
-  return <MainLayout>{children}</MainLayout>;
-};
+import Buscar from './pages/Buscar';
+import Configuracoes from './pages/Configuracoes';
 
 export default function App() {
   return (
@@ -31,7 +31,6 @@ export default function App() {
         {/* ==================== ROTAS PÚBLICAS ==================== */}
         <Route path="/login" element={<Login />} />
         <Route path="/fluxo-senha" element={<FluxoSenha />} />
-        
 
         {/* ==================== ROTAS PROTEGIDAS ==================== */}
         {/* Feed Principal */}
@@ -39,77 +38,106 @@ export default function App() {
           path="/feed" 
           element={
             <RotaProtegida>
-              <Feed />
+              <MainLayout><Feed /></MainLayout>
             </RotaProtegida>
           } 
         />
 
-        {/* ADICIONADO: Rota para o seu próprio Perfil (Sem ID na URL) */}
+        {/* Perfil Próprio (Sem ID na URL) */}
         <Route 
           path="/perfil" 
           element={
             <RotaProtegida>
-              <Perfil />
+              <MainLayout><Perfil /></MainLayout>
             </RotaProtegida>
           } 
         />
 
-        {/* Página de Perfil de outro usuário (Com ID na URL) */}
+        {/* Editar Perfil (DEVE vir ANTES de /perfil/:id) */}
+        <Route 
+          path="/perfil/editar" 
+          element={
+            <RotaProtegida>
+              <MainLayout><EditarPerfil /></MainLayout>
+            </RotaProtegida>
+          } 
+        />
+
+        {/* Perfil de outro usuário (Com ID na URL) */}
         <Route 
           path="/perfil/:id" 
           element={
             <RotaProtegida>
-              <Perfil />
+              <MainLayout><Perfil /></MainLayout>
             </RotaProtegida>
           } 
         />
 
-        {/* Nova Página de Criação de Postagem */}
+        {/* Criação de Postagem */}
         <Route 
           path="/criar-post" 
           element={
             <RotaProtegida>
-              <CriarPost />
+              <MainLayout><CriarPost /></MainLayout>
             </RotaProtegida>
           } 
-        />    
-<Route 
-  path="/criar-aviso" 
-  element={
-    <RotaProtegida>
-      <CriarAviso />
-    </RotaProtegida>
-  } 
-/>
+        />
+
+        {/* Criação de Aviso (Professor) */}
+        <Route 
+          path="/criar-aviso" 
+          element={
+            <RotaProtegida>
+              <MainLayout><CriarAviso /></MainLayout>
+            </RotaProtegida>
+          } 
+        />
+
+        {/* Mensagens */}
         <Route 
           path="/mensagens" 
           element={
             <RotaProtegida>
-              <Mensagens />
+              <MainLayout><Mensagens /></MainLayout>
             </RotaProtegida>
           } 
         />
-        
+
+        {/* Notificações */}
         <Route 
           path="/notificacoes" 
           element={
             <RotaProtegida>
-              <Notificacoes />
+              <MainLayout><Notificacoes /></MainLayout>
             </RotaProtegida>
           } 
         />
-        <Route 
-  path="/perfil/editar" 
-  element={
-    <RotaProtegida>
-      <EditarPerfil />
-    </RotaProtegida>
-  } 
-/>
 
-        {/* Fallback de rotas: Qualquer caminho inválido joga para o login ou feed */}
+        {/* Página de Busca */}
+        <Route 
+          path="/busca" 
+          element={
+            <RotaProtegida>
+              <MainLayout><Buscar /></MainLayout>
+            </RotaProtegida>
+          } 
+        />
+
+        {/* Configurações */}
+        <Route 
+          path="/configuracoes" 
+          element={
+            <RotaProtegida>
+              <MainLayout><Configuracoes /></MainLayout>
+            </RotaProtegida>
+          } 
+        />
+
+        {/* Redirecionamento padrão da raiz para o feed */}
+        <Route path="/" element={<Navigate to="/feed" replace />} />
+
+        {/* Fallback: Qualquer caminho inválido joga para o login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
-        
       </Routes>
     </Router>
   );
