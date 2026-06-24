@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Search, User, Settings, GraduationCap, Loader2 } from 'lucide-react';
+import { Home, Search, User, Settings, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 export default function Sidebar() {
@@ -32,12 +32,10 @@ export default function Sidebar() {
       {/* Bloco Superior: Logo e Rotas */}
       <div className="flex flex-col gap-8">
         
-        {/* LOGO DO CONECTA */}
-        <div className="flex items-center gap-1 px-4 py-1">
-          <div className="bg-black text-white p-2 rounded-xl flex items-center justify-center">
-            <GraduationCap size={15} strokeWidth={2} />
-          </div>
-          <span className="text-[15px] font-bold text-gray-950 tracking-tight">Conecta</span>
+        {/* LOGO DO EDUCONNECT */}
+        <div className="flex items-center gap-2 px-4 py-1">
+          <img src="/src/assets/logo-educonnect.png" alt="EduConnect" className="w-8 h-8 object-contain" />
+          <span className="text-[15px] font-bold text-gray-950 tracking-tight">EduConnect</span>
         </div>
 
         {/* LINKS DE NAVEGAÇÃO SUPERIORES */}
