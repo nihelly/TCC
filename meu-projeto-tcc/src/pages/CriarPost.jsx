@@ -1,51 +1,46 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Image, X, Sparkles, UploadCloud } from 'lucide-react';
+import { ArrowLeft, Loader2, Send, UploadCloud, X } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
 
 export default function CriarPost() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  
+
   const [titulo, setTitulo] = useState('');
   const [corpo, setCorpo] = useState('');
-  const [imagemUrl, setImagemUrl] = useState(''); // URL final pública da imagem
+  const [imagemUrl, setImagemUrl] = useState('');
   const [carregando, setCarregando] = useState(false);
   const [enviandoImagem, setEnviandoImagem] = useState(false);
 
-  // Função para fazer o Upload do arquivo para o Storage do Supabase
   const handleUploadImagem = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validações básicas de arquivo
     if (!file.type.startsWith('image/')) {
-      toast.error('Arquivo inválido', { description: 'Por favor, selecione uma imagem válida (PNG, JPG, JPEG).' });
+      toast.error('Arquivo inválido', { description: 'Selecione uma imagem PNG, JPG ou JPEG.' });
       return;
     }
 
     setEnviandoImagem(true);
     try {
-      // Cria um nome único para o arquivo para evitar colisões no banco
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID?.() || Math.random()}.${fileExt}`;
       const filePath = `public/${fileName}`;
 
-      // Envia o arquivo para o bucket 'posts-images'
       const { error: uploadError } = await supabase.storage
         .from('posts-images')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // Busca a URL pública do arquivo recém-criado
       const { data } = supabase.storage
         .from('posts-images')
         .getPublicUrl(filePath);
 
       setImagemUrl(data.publicUrl);
-      toast.success('Imagem carregada com sucesso! 🖼️');
+      toast.success('Imagem carregada com sucesso!');
     } catch (error) {
       toast.error('Erro no upload', { description: error.message });
     } finally {
@@ -53,7 +48,6 @@ export default function CriarPost() {
     }
   };
 
-  // Envio final do formulário (Inserção do Post no Banco)
   const handleCriarPostagem = async (e) => {
     e.preventDefault();
 
@@ -68,7 +62,7 @@ export default function CriarPost() {
       if (!user) throw new Error('Usuário não autenticado.');
 
       const { error } = await supabase
-        .from('posts') 
+        .from('posts')
         .insert([
           {
             title: titulo,
@@ -82,7 +76,7 @@ export default function CriarPost() {
 
       if (error) throw error;
 
-      toast.success('Publicado com sucesso! 🎉');
+      toast.success('Publicado com sucesso!');
       navigate('/feed');
     } catch (error) {
       toast.error('Erro ao publicar', { description: error.message });
@@ -92,34 +86,28 @@ export default function CriarPost() {
   };
 
   return (
-    <div className="w-full max-w-[640px] mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      
-      {/* Cabeçalho interno */}
-      <div className="flex items-center justify-between border-b border-gray-100 pb-5">
+    <div className="mx-auto w-full max-w-[760px] space-y-6 pb-24">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <button 
+          <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all cursor-pointer"
+            className="focus-ring flex h-10 w-10 items-center justify-center rounded-lg text-[#94A3B8] transition-colors hover:bg-[#111827] hover:text-[#F8FAFC]"
+            aria-label="Voltar"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={19} />
           </button>
-          <h1 className="text-[17px] font-bold text-gray-950 tracking-tight">
-            Criar nova publicação
-          </h1>
-        </div>
-        <div className="text-gray-400">
-          <Sparkles size={18} strokeWidth={1.5} />
+          <div>
+            <h1 className="text-[24px] font-bold text-[#F8FAFC]">Criar publicação</h1>
+            <p className="text-[14px] text-[#94A3B8]">Compartilhe materiais, dúvidas ou atualizações com a turma.</p>
+          </div>
         </div>
       </div>
 
-      {/* Formulário */}
       <form onSubmit={handleCriarPostagem} className="space-y-5">
-        <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-[0_8px_30px_rgba(0,0,0,0.008)] space-y-5">
-          
-          {/* Título */}
-          <div className="space-y-1.5">
-            <label htmlFor="tituloPost" className="text-[12px] font-semibold text-gray-700 pl-1 block">
+        <section className="ui-card space-y-5 p-5 sm:p-6">
+          <div className="space-y-2">
+            <label htmlFor="tituloPost" className="text-[13px] font-semibold text-[#CBD5E1]">
               Título da publicação
             </label>
             <input
@@ -128,34 +116,32 @@ export default function CriarPost() {
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Ex: Resumos de IHC para a P2"
-              className="w-full bg-[#fcfcfc] border border-gray-100 rounded-2xl py-3 px-4 text-[13px] text-gray-800 outline-none focus:bg-white focus:border-black transition-all"
+              className="field px-4 py-3 text-sm"
               maxLength={80}
             />
+            <p className="text-right text-[12px] text-[#64748B]">{titulo.length}/80</p>
           </div>
 
-          {/* Conteúdo */}
-          <div className="space-y-1.5">
-            <label htmlFor="corpoPost" className="text-[12px] font-semibold text-gray-700 pl-1 block">
-              O que você quer compartilhar? (Opcional)
+          <div className="space-y-2">
+            <label htmlFor="corpoPost" className="text-[13px] font-semibold text-[#CBD5E1]">
+              Conteúdo
             </label>
             <textarea
               id="corpoPost"
               value={corpo}
               onChange={(e) => setCorpo(e.target.value)}
-              placeholder="Escreva aqui os detalhes, links ou avisos da sua postagem..."
-              rows={4}
-              className="w-full bg-[#fcfcfc] border border-gray-100 rounded-2xl py-3 px-4 text-[13px] text-gray-800 outline-none focus:bg-white focus:border-black transition-all resize-none leading-relaxed"
+              placeholder="Escreva detalhes, links, referências ou orientações..."
+              rows={6}
+              className="field resize-none px-4 py-3 text-sm leading-relaxed"
             />
           </div>
 
-          {/* ÁREA DE UPLOAD DE IMAGEM REAL */}
-          <div className="space-y-1.5">
-            <label className="text-[12px] font-semibold text-gray-700 pl-1 block">
-              Imagem de capa (Opcional)
+          <div className="space-y-2">
+            <label className="text-[13px] font-semibold text-[#CBD5E1]">
+              Imagem de apoio
             </label>
-            
-            {/* Input escondido nativo do HTML */}
-            <input 
+
+            <input
               type="file"
               ref={fileInputRef}
               onChange={handleUploadImagem}
@@ -164,58 +150,46 @@ export default function CriarPost() {
             />
 
             {!imagemUrl ? (
-              /* Dropzone estilizado clique/arraste */
               <button
                 type="button"
                 disabled={enviandoImagem}
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full h-[140px] bg-[#fcfcfc] border border-dashed border-gray-200 hover:border-gray-400 rounded-2xl flex flex-col items-center justify-center gap-2 group transition-all cursor-pointer disabled:opacity-60"
+                className="focus-ring flex min-h-[170px] w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-[rgba(148,163,184,0.28)] bg-[#0F172A]/62 p-6 text-center transition-colors hover:border-[#3B82F6] disabled:opacity-60"
               >
-                <div className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 group-hover:text-gray-600 transition-colors shadow-sm">
-                  <UploadCloud size={20} strokeWidth={1.8} />
-                </div>
-                <span className="text-[12px] text-gray-500 font-medium">
+                <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#111827] text-[#3B82F6]">
+                  {enviandoImagem ? <Loader2 size={22} className="animate-spin" /> : <UploadCloud size={22} />}
+                </span>
+                <span className="text-[14px] font-semibold text-[#CBD5E1]">
                   {enviandoImagem ? 'Fazendo upload...' : 'Clique para selecionar uma imagem'}
                 </span>
-                <span className="text-[10px] text-gray-400">PNG, JPG de até 5MB</span>
+                <span className="text-[12px] text-[#94A3B8]">PNG ou JPG até 5MB</span>
               </button>
             ) : (
-              /* Preview elegante com botão de exclusão */
-              <div className="relative w-full h-[220px] rounded-2xl overflow-hidden border border-gray-100 bg-gray-50">
-                <img src={imagemUrl} alt="Preview do post" className="w-full h-full object-cover" />
+              <div className="relative overflow-hidden rounded-lg border border-[rgba(148,163,184,0.14)] bg-[#0F172A]">
+                <img src={imagemUrl} alt="Preview do post" className="h-[260px] w-full object-cover" />
                 <button
                   type="button"
                   onClick={() => setImagemUrl('')}
-                  className="absolute top-3 right-3 p-1.5 bg-black/80 text-white hover:bg-black rounded-full transition-colors cursor-pointer shadow-md"
+                  className="focus-ring absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#0B0F19]/86 text-white transition-colors hover:bg-[#EF4444]"
+                  aria-label="Remover imagem"
                 >
-                  <X size={14} />
+                  <X size={16} />
                 </button>
               </div>
             )}
           </div>
+        </section>
 
-        </div>
-
-        {/* Botões de Ação */}
-        <div className="flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="px-5 py-3 rounded-2xl text-[13px] font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100/50 transition-all cursor-pointer"
-          >
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button type="button" onClick={() => navigate(-1)} className="btn-secondary px-5 text-sm">
             Cancelar
           </button>
-          
-          <button
-            type="submit"
-            disabled={carregando || enviandoImagem}
-            className="bg-white border border-black hover:bg-gray-50 text-gray-900 font-medium py-3 px-8 rounded-2xl text-[13px] transition-all shadow-sm disabled:opacity-40 cursor-pointer"
-          >
-            {carregando ? 'Publicando...' : 'Publicar no AcadNet'}
+          <button type="submit" disabled={carregando || enviandoImagem} className="btn-primary px-5 text-sm disabled:opacity-50">
+            {carregando ? <Loader2 size={17} className="animate-spin" /> : <Send size={17} />}
+            {carregando ? 'Publicando...' : 'Publicar'}
           </button>
         </div>
       </form>
-
     </div>
   );
 }

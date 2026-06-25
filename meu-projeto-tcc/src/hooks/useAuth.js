@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 // O segredo está neste "export function" aqui embaixo:
@@ -6,6 +6,23 @@ export function useAuth() {
   const [usuario, setUsuario] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [carregando, setCarregando] = useState(true);
+
+  const buscarPerfil = useCallback(async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      setPerfil(data);
+    } catch (err) {
+      console.error("Erro ao buscar perfil:", err.message);
+    } finally {
+      setCarregando(false);
+    }
+  }, []);
 
   useEffect(() => {
     // 1. Pega a sessão inicial
@@ -30,24 +47,7 @@ export function useAuth() {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
-
-  async function buscarPerfil(id) {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-      setPerfil(data);
-    } catch (err) {
-      console.error("Erro ao buscar perfil:", err.message);
-    } finally {
-      setCarregando(false);
-    }
-  }
+  }, [buscarPerfil]);
 
   // Retornamos um objeto com tudo o que o App precisa
   return { 

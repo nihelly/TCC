@@ -24,7 +24,7 @@ export default function FluxoSenha() {
         if (user?.email) {
           setEmail(user.email);
         }
-      } catch (err) {
+      } catch {
         console.log('Usuário não autenticado previamente (Acesso externo).');
       }
     }
@@ -83,7 +83,7 @@ export default function FluxoSenha() {
         description: 'Agora insira sua nova credencial de acesso abaixo.',
       });
       setPasso(3); // Libera o formulário para criar a nova senha
-    } catch (error) {
+    } catch {
       toast.error('Código inválido', { 
         description: 'O código inserido está incorreto ou já expirou.' 
       });

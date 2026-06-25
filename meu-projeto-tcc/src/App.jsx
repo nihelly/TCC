@@ -25,7 +25,19 @@ export default function App() {
   return (
     <Router>
       {/* Provedor global das notificações flutuantes (Toast) */}
-      <Toaster position="top-right" richColors closeButton />
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        theme="dark"
+        toastOptions={{
+          style: {
+            background: '#111827',
+            border: '1px solid rgba(148, 163, 184, 0.18)',
+            color: '#F8FAFC',
+          },
+        }}
+      />
 
       <Routes>
         {/* ==================== ROTAS PÚBLICAS ==================== */}

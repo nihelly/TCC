@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Megaphone, Hash, User } from 'lucide-react';
+import { Search, Megaphone, Hash } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 export default function Buscar() {
@@ -56,8 +56,9 @@ export default function Buscar() {
 
   // 2. Sistema de Busca Dinâmica de Usuários (Dispara ao digitar)
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setUsuariosFiltrados([]);
+    const termo = searchTerm.trim();
+    if (!termo) {
+      queueMicrotask(() => setUsuariosFiltrados([]));
       return;
     }
 

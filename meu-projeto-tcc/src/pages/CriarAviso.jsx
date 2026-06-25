@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Megaphone, ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Megaphone, Send } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
 
 export default function CriarAviso() {
   const navigate = useNavigate();
-  
-  // Estados do formulário e controle
+
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
   const [materia, setMateria] = useState('');
@@ -15,7 +14,6 @@ export default function CriarAviso() {
   const [verificandoPapel, setVerificandoPapel] = useState(true);
   const [usuarioPerfil, setUsuarioPerfil] = useState(null);
 
-  // Verifica se o usuário logado realmente é um professor
   useEffect(() => {
     async function verificarPermissao() {
       try {
@@ -32,8 +30,8 @@ export default function CriarAviso() {
           .single();
 
         if (error || !perfil || perfil.papel !== 'professor') {
-          toast.error('Acesso negado: Apenas professores podem criar avisos.');
-          navigate('/feed'); // Redireciona alunos invasores
+          toast.error('Acesso negado: apenas professores podem criar avisos.');
+          navigate('/feed');
           return;
         }
 
@@ -52,31 +50,30 @@ export default function CriarAviso() {
     e.preventDefault();
 
     if (!titulo.trim() || !conteudo.trim() || !materia.trim()) {
-      return toast.error('Por favor, preencha todos os campos do aviso.');
+      return toast.error('Preencha todos os campos do aviso.');
     }
 
     try {
       setEnviando(true);
       const { data: { user } } = await supabase.auth.getUser();
 
-      // Altere o nome da tabela ('avisos' ou 'announcements') conforme sua estrutura do banco
       const { error } = await supabase
-        .from('posts') // Se você centraliza avisos na tabela posts usando uma tag/tipo, ou use sua tabela própria
+        .from('posts')
         .insert([
           {
             user_id: user.id,
             title: titulo.trim(),
             content: conteudo.trim(),
-            materia: materia.trim(), // Tag ou coluna de disciplina (ex: "BANCO DE DADOS")
-            is_aviso: true,          // Flag opcional para diferenciar posts de avisos
+            materia: materia.trim(),
+            is_aviso: true,
             created_at: new Date().toISOString()
           }
         ]);
 
       if (error) throw error;
 
-      toast.success('Mural atualizado! Aviso publicado com sucesso.');
-      navigate('/feed'); // Volta para a página principal para ver o aviso no mural
+      toast.success('Aviso publicado no mural.');
+      navigate('/feed');
     } catch (err) {
       console.error(err);
       toast.error('Falha ao publicar aviso no sistema.');
@@ -86,85 +83,90 @@ export default function CriarAviso() {
   }
 
   if (verificandoPapel) {
-    return <div className="text-center py-20 text-gray-400 text-sm">Validando credenciais docentes...</div>;
+    return (
+      <div className="mx-auto max-w-[680px]">
+        <div className="ui-card p-8 text-center text-[14px] text-[#94A3B8]">
+          Validando credenciais docentes...
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="w-full max-w-[600px] mx-auto space-y-8">
-      
-      {/* Botão de Voltar e Título */}
-      <div className="flex items-center gap-4">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-500 hover:text-black"
+    <div className="mx-auto w-full max-w-[760px] space-y-6 pb-24">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="focus-ring flex h-10 w-10 items-center justify-center rounded-lg text-[#94A3B8] transition-colors hover:bg-[#111827] hover:text-[#F8FAFC]"
+          aria-label="Voltar"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={19} />
         </button>
         <div>
-          <h1 className="text-[13px] font-bold text-gray-950 tracking-widest uppercase flex items-center gap-2">
-            <Megaphone size={16} className="text-black" /> NOVO AVISO AO MURAL
-          </h1>
-          <p className="text-[11px] text-gray-400 font-medium mt-0.5">Publicando como: {usuarioPerfil?.nome}</p>
+          <div className="mb-1 flex items-center gap-2 text-[#3B82F6]">
+            <Megaphone size={18} />
+            <span className="text-[13px] font-semibold uppercase tracking-[0.14em]">Mural institucional</span>
+          </div>
+          <h1 className="text-[24px] font-bold text-[#F8FAFC]">Novo aviso aos alunos</h1>
+          <p className="text-[14px] text-[#94A3B8]">Publicando como {usuarioPerfil?.nome}</p>
         </div>
       </div>
 
-      {/* Formulário de Criação */}
-      <form onSubmit={handlePublicarAviso} className="bg-white border border-gray-100 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.01)] space-y-5">
-        
-        {/* Campo Disciplina / Matéria */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase pl-1">Matéria / Disciplina</label>
-          <input 
-            type="text"
-            placeholder="Ex: BANCO DE DADOS, ALGORITMOS..."
-            value={materia}
-            onChange={(e) => setMateria(e.target.value.toUpperCase())} // Sempre caixa alta para o padrão do design
-            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-[12px] font-semibold text-gray-800 outline-none focus:border-gray-300 transition-colors"
-          />
+      <form onSubmit={handlePublicarAviso} className="ui-card space-y-5 p-5 sm:p-6">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-[13px] font-semibold text-[#CBD5E1]">Disciplina</label>
+            <input
+              type="text"
+              placeholder="Ex: Banco de Dados"
+              value={materia}
+              onChange={(e) => setMateria(e.target.value)}
+              className="field px-4 py-3 text-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[13px] font-semibold text-[#CBD5E1]">Categoria</label>
+            <select className="field px-4 py-3 text-sm" defaultValue="Avisos">
+              <option>Avisos</option>
+              <option>Provas</option>
+              <option>Materiais</option>
+              <option>Eventos</option>
+            </select>
+          </div>
         </div>
 
-        {/* Campo Título */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase pl-1">Título do Aviso</label>
-          <input 
+        <div className="space-y-2">
+          <label className="text-[13px] font-semibold text-[#CBD5E1]">Título do aviso</label>
+          <input
             type="text"
-            placeholder="Ex: Prova adiada, Material disponível..."
+            placeholder="Ex: Prova adiada"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-950 outline-none focus:border-gray-300 transition-colors placeholder:font-normal"
+            className="field px-4 py-3 text-sm font-semibold"
           />
         </div>
 
-        {/* Campo Conteúdo detalhado */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-400 tracking-wider uppercase pl-1">Conteúdo do Informativo</label>
-          <textarea 
-            rows={4}
+        <div className="space-y-2">
+          <label className="text-[13px] font-semibold text-[#CBD5E1]">Conteúdo</label>
+          <textarea
+            rows={6}
             placeholder="Digite os detalhes do comunicado para os alunos..."
             value={conteudo}
             onChange={(e) => setConteudo(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 text-[12px] text-gray-600 font-light leading-relaxed outline-none resize-none focus:border-gray-300 transition-colors"
+            className="field resize-none px-4 py-3 text-sm leading-relaxed"
           />
         </div>
 
-        {/* Botão de Envio */}
-        <div className="pt-2">
-          <button
-            type="submit"
-            disabled={enviando}
-            className="w-full bg-black text-white py-3.5 rounded-xl text-[12px] font-bold tracking-wider uppercase hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-          >
-            {enviando ? (
-              <>
-                <Loader2 size={14} className="animate-spin" />
-                <span>Disparando Comunicado...</span>
-              </>
-            ) : (
-              <span>Publicar no Mural</span>
-            )}
+        <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+          <button type="button" onClick={() => navigate(-1)} className="btn-secondary px-5 text-sm">
+            Cancelar
+          </button>
+          <button type="submit" disabled={enviando} className="btn-primary px-5 text-sm disabled:opacity-50">
+            {enviando ? <Loader2 size={17} className="animate-spin" /> : <Send size={17} />}
+            {enviando ? 'Publicando...' : 'Publicar aviso'}
           </button>
         </div>
-
       </form>
     </div>
   );

@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/useAuth';
  * Ele verifica se o usuário está logado e se tem o papel necessário.
  */
 export const RotaProtegida = ({ children, apenasProfessor = false }) => {
-  const { usuario, perfil, carregando, ehProfessor } = useAuth();
+  const { usuario, carregando, ehProfessor } = useAuth();
 
   // 1. Enquanto o Supabase verifica a sessão, mostramos uma tela de carregamento limpa
   if (carregando) {

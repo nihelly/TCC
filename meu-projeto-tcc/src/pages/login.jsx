@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight, LockKeyhole, Mail } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
 import GeometricBackground from '../components/GeometricBackground';
+import logoDark from '../assets/logo-educonnect-dark.png';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,30 +14,28 @@ export default function Login() {
 
   const lidarComLogin = async (e) => {
     e.preventDefault();
-    
-    // Validação simples antes de chamar o banco
+
     if (!email || !senha) {
-      toast.warning('Atenção', { description: 'Por favor, preencha todos os campos.' });
+      toast.warning('Atenção', { description: 'Preencha todos os campos para entrar.' });
       return;
     }
 
     setCarregando(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
         password: senha,
       });
 
       if (error) throw error;
 
-      toast.message('Bem-vindo de volta ao EduConnect!');
-      
+      toast.success('Bem-vindo de volta ao EduConnect!');
       navigate('/feed');
     } catch (error) {
       toast.error('Falha na autenticação', {
-        description: error.message === 'Invalid login credentials' 
-          ? 'E-mail institucional ou senha incorretos.' 
+        description: error.message === 'Invalid login credentials'
+          ? 'E-mail institucional ou senha incorretos.'
           : 'Não foi possível conectar. Verifique seus dados de acesso.',
       });
     } finally {
@@ -44,84 +44,104 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center p-4 relative">
+    <div className="app-shell relative flex min-h-screen items-center justify-center p-4">
       <GeometricBackground />
-      {/* Card de login acima do fundo geométrico */}
-      <div className="relative z-10 w-full max-w-[440px] bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.015)] border border-gray-100 p-10 flex flex-col items-center">
-        
-        {/* Logo EduConnect */}
-        <div className="mb-6">
-          <img src="/src/assets/logo-educonnect.png" alt="EduConnect" className="w-20 h-20 object-contain mx-auto" />
-        </div>
-
-        {/* Textos Principais */}
-        <h1 className="text-[20px] font-bold text-gray-950 text-center mb-1 tracking-tight">
-          Seja bem-vindo ao EduConnect!
-        </h1>
-        <p className="text-[12px] text-gray-400 text-center mb-8 font-light">
-          por favor, insira a senha.
-        </p>
-
-        {/* Formulário com IDs de Acessibilidade */}
-        <form onSubmit={lidarComLogin} className="w-full space-y-5">
-          {/* E-mail */}
-          <div className="space-y-1.5">
-            <label htmlFor="emailInput" className="text-[12px] font-semibold text-gray-700 pl-1 block">
-              E-mail institucional
-            </label>
-            <input
-              id="emailInput"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="exemplo@gmail.com"
-              className="w-full bg-[#fcfcfc] border border-gray-100 rounded-2xl py-3 px-4 text-[13px] text-gray-700 outline-none focus:bg-white focus:border-black transition-all"
-            />
-          </div>
-
-          {/* Senha */}
-          <div className="space-y-1.5">
-            <label htmlFor="senhaInput" className="text-[12px] font-semibold text-gray-700 pl-1 block">
-              Senha
-            </label>
-            <input
-              id="senhaInput"
-              name="senha"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              placeholder="••••••••"
-              className="w-full bg-[#fcfcfc] border border-gray-100 rounded-2xl py-3 px-4 text-[13px] text-gray-700 outline-none focus:bg-white focus:border-black transition-all"
-            />
-          </div>
-
-          {/* Links Inferiores */}
-          <div className="flex items-center justify-between text-[11px] text-gray-400 font-light px-1 pt-1">
-            <span 
-              className="cursor-pointer hover:text-gray-600 hover:underline transition-all" 
-              onClick={() => navigate('/fluxo-senha')}
-            >
-              Esqueci minha senha
+      <main className="relative z-10 grid w-full max-w-[980px] overflow-hidden rounded-lg border border-[rgba(148,163,184,0.14)] bg-[#111827]/84 shadow-2xl backdrop-blur-xl lg:grid-cols-[1fr_440px]">
+        <section className="hidden min-h-[560px] flex-col justify-between border-r border-[rgba(148,163,184,0.14)] p-10 lg:flex">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-[rgba(148,163,184,0.14)] bg-[#0B0F19]">
+              <img src={logoDark} alt="EduConnect" className="h-9 w-9 object-contain" />
             </span>
-            <span className="cursor-pointer hover:text-gray-600 hover:underline transition-all">
-              Acesso restrito ao curso
-            </span>
+            <div>
+              <h1 className="text-[24px] font-bold leading-tight text-[#F8FAFC]">EduConnect</h1>
+              <p className="text-[14px] text-[#94A3B8]">Rede acadêmica do curso</p>
+            </div>
           </div>
 
-          {/* Botão com Borda Preta Estilo Mockup */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={carregando}
-              className="w-full bg-white border border-black hover:bg-gray-50 text-gray-900 font-medium py-3 rounded-2xl text-[13px] transition-all cursor-pointer shadow-sm disabled:opacity-50"
-            >
+          <div className="max-w-md">
+            <p className="mb-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#3B82F6]">
+              Plataforma institucional
+            </p>
+            <h2 className="text-[32px] font-bold leading-tight text-[#F8FAFC]">
+              Avisos, materiais e conversas acadêmicas em um só lugar.
+            </h2>
+            <p className="mt-4 text-[16px] leading-relaxed text-[#94A3B8]">
+              Um ambiente mais claro para acompanhar disciplinas, professores, publicações e mensagens.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 text-center">
+            {['Avisos', 'Materiais', 'Mensagens'].map((item) => (
+              <div key={item} className="rounded-lg border border-[rgba(148,163,184,0.14)] bg-[#0B0F19]/60 p-3 text-[13px] font-semibold text-[#CBD5E1]">
+                {item}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="p-6 sm:p-10">
+          <div className="mb-8 flex items-center justify-center lg:hidden">
+            <img src={logoDark} alt="EduConnect" className="h-16 w-16 object-contain" />
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-[24px] font-bold text-[#F8FAFC]">Entrar na sua conta</h2>
+            <p className="mt-1 text-[14px] text-[#94A3B8]">Use seu e-mail institucional para continuar.</p>
+          </div>
+
+          <form onSubmit={lidarComLogin} className="space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="emailInput" className="text-[13px] font-semibold text-[#CBD5E1]">
+                E-mail institucional
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" size={18} />
+                <input
+                  id="emailInput"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nome@instituicao.edu"
+                  className="field py-3 pl-10 pr-4 text-sm"
+                  autoComplete="email"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="senhaInput" className="text-[13px] font-semibold text-[#CBD5E1]">
+                Senha
+              </label>
+              <div className="relative">
+                <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" size={18} />
+                <input
+                  id="senhaInput"
+                  name="senha"
+                  type="password"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  placeholder="Sua senha"
+                  className="field py-3 pl-10 pr-4 text-sm"
+                  autoComplete="current-password"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 text-[13px]">
+              <button type="button" className="font-semibold text-[#94A3B8] transition-colors hover:text-[#F8FAFC]" onClick={() => navigate('/fluxo-senha')}>
+                Esqueci minha senha
+              </button>
+              <span className="text-[#64748B]">Acesso restrito ao curso</span>
+            </div>
+
+            <button type="submit" disabled={carregando} className="btn-primary w-full px-4 text-sm disabled:opacity-50">
               {carregando ? 'Entrando...' : 'Entrar'}
+              <ArrowRight size={17} />
             </button>
-          </div>
-        </form>
-
-      </div>
+          </form>
+        </section>
+      </main>
     </div>
   );
 }

@@ -1,13 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Repeat2, User, MoreHorizontal } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { BookOpen, GraduationCap, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Anuncios } from '../components/Anuncios';
+import { PostCard } from '../components/PostCard';
+
+function FeedSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[0, 1, 2].map((item) => (
+        <div key={item} className="ui-card p-5">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="skeleton h-11 w-11 rounded-full" />
+            <div className="space-y-2">
+              <div className="skeleton h-3 w-32 rounded" />
+              <div className="skeleton h-3 w-20 rounded" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="skeleton h-5 w-3/4 rounded" />
+            <div className="skeleton h-4 w-full rounded" />
+            <div className="skeleton h-4 w-5/6 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function Feed() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(6);
 
   useEffect(() => {
     async function carregarPosts() {
@@ -28,132 +53,107 @@ export default function Feed() {
     carregarPosts();
   }, []);
 
-  // Posts de exemplo para quando o banco estiver vazio
-  const postsExemplo = [
+  const postsExemplo = useMemo(() => ([
     {
       id: 'ex1',
-      author_handle: '@aluno.exemplo',
-      title: 'TÍTULO',
-      content: '',
+      author_handle: '@ana.design',
+      title: 'Checklist para apresentação do TCC',
+      content: 'Organizei um roteiro rápido para revisar problema, objetivos, metodologia e próximos passos antes da banca.',
       image_url: null,
       has_image_placeholder: true,
-      likes_count: 100,
-      comments_count: 100,
-      reposts_count: 100,
-      body_label: '(corpo da postagem)',
+      likes_count: 24,
+      comments_count: 8,
+      reposts_count: 3,
+      created_at: new Date().toISOString(),
     },
     {
       id: 'ex2',
-      author_handle: '@aluno.exemplo',
-      title: 'TÍTULO',
-      content: 'Bom dia!',
+      author_handle: '@prof.helena',
+      title: 'Plantão de dúvidas nesta sexta',
+      content: 'Atendimento das 14h às 16h no laboratório 03. Tragam perguntas sobre modelagem, referências e cronograma.',
       image_url: null,
       has_image_placeholder: false,
-      likes_count: 100,
-      comments_count: 100,
-      reposts_count: 100,
-      body_label: '(corpo da postagem)',
+      likes_count: 18,
+      comments_count: 5,
+      reposts_count: 2,
+      created_at: new Date().toISOString(),
     },
-  ];
+  ]), []);
 
   const listaDePostagens = posts.length > 0 ? posts : postsExemplo;
+  const visiblePosts = listaDePostagens.slice(0, visibleCount);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 420;
+      if (nearBottom) {
+        setVisibleCount((current) => Math.min(current + 4, listaDePostagens.length));
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [listaDePostagens.length]);
 
   return (
-    <div className="w-full flex gap-8">
-      
-      {/* ═══════ COLUNA PRINCIPAL — POSTS ═══════ */}
-      <div className="flex-1 max-w-[650px] space-y-4">
+    <div className="grid w-full grid-cols-1 gap-6 pb-24 lg:grid-cols-[minmax(0,720px)_320px] xl:grid-cols-[minmax(0,760px)_340px]">
+      <section className="min-w-0 space-y-5">
+        <div className="surface-panel rounded-lg p-4 sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="mb-2 flex items-center gap-2 text-[#94A3B8]">
+                <GraduationCap size={18} />
+                <span className="text-[13px] font-semibold uppercase tracking-[0.14em]">Feed acadêmico</span>
+              </div>
+              <h2 className="text-[24px] font-bold leading-tight text-[#F8FAFC]">
+                Atualizações da comunidade
+              </h2>
+              <p className="mt-1 max-w-xl text-[14px] leading-relaxed text-[#94A3B8]">
+                Posts, avisos e materiais em uma linha do tempo mais clara e fácil de escanear.
+              </p>
+            </div>
+            <button onClick={() => navigate('/criar-post')} className="btn-primary px-4 text-sm">
+              <Plus size={17} />
+              Nova publicação
+            </button>
+          </div>
+        </div>
 
-        {/* Estado de carregamento */}
         {carregando ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
+          <FeedSkeleton />
+        ) : listaDePostagens.length === 0 ? (
+          <div className="ui-card flex min-h-[280px] flex-col items-center justify-center p-8 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-[#0F172A] text-[#3B82F6]">
+              <BookOpen size={26} />
+            </div>
+            <h2 className="text-[20px] font-bold text-[#F8FAFC]">Nenhuma publicação ainda</h2>
+            <p className="mt-2 max-w-sm text-[14px] leading-relaxed text-[#94A3B8]">
+              Seja a primeira pessoa a compartilhar materiais, dúvidas ou atualizações do curso.
+            </p>
+            <button onClick={() => navigate('/criar-post')} className="btn-primary mt-5 px-4 text-sm">
+              <Plus size={17} />
+              Publicar agora
+            </button>
           </div>
         ) : (
-          listaDePostagens.map((post) => (
-            <div key={post.id} className="bg-white border border-gray-100 rounded-[1.5rem] overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
-              
-              {/* Header do Post: Avatar + Handle + Menu */}
-              <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gray-50 rounded-full border border-gray-100 flex items-center justify-center flex-shrink-0">
-                    <User size={16} className="text-gray-300" />
-                  </div>
-                  <span className="text-[13px] text-gray-500 font-medium">{post.author_handle || '@aluno.exemplo'}</span>
-                </div>
-                <button className="text-gray-300 hover:text-gray-500 transition-colors cursor-pointer p-1">
-                  <MoreHorizontal size={18} />
-                </button>
+          <div className="space-y-4">
+            {visiblePosts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+            {visibleCount < listaDePostagens.length && (
+              <div className="py-4 text-center text-[13px] font-medium text-[#94A3B8]">
+                Carregando mais publicações...
               </div>
-
-              {/* Título */}
-              <div className="px-5 pb-2">
-                <h2 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
-                  {post.title || 'TÍTULO'}
-                </h2>
-              </div>
-
-              {/* Imagem ou placeholder de imagem */}
-              {(post.image_url || post.has_image_placeholder) && (
-                <div className="mx-5 mb-3">
-                  {post.image_url ? (
-                    <div className="w-full rounded-xl overflow-hidden border border-gray-100">
-                      <img src={post.image_url} alt="Imagem do post" className="w-full object-cover" />
-                    </div>
-                  ) : (
-                    <div className="w-full h-[180px] bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center">
-                      <span className="text-[11px] text-gray-300 italic">imagem</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Conteúdo textual */}
-              {post.content && (
-                <div className="px-5 pb-2">
-                  <p className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-line">
-                    {post.content}
-                  </p>
-                </div>
-              )}
-
-              {/* Footer: Interações + Label do corpo */}
-              <div className="flex items-center justify-between px-5 pb-4 pt-1">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-gray-400 text-[12px] hover:text-red-500 cursor-pointer transition-colors">
-                    <Heart size={15} strokeWidth={1.5} /> 
-                    <span className="text-blue-500 font-medium">{post.likes_count || 0}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-gray-400 text-[12px] hover:text-blue-500 cursor-pointer transition-colors">
-                    <MessageCircle size={15} strokeWidth={1.5} /> 
-                    <span>{post.comments_count || 0}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-gray-400 text-[12px] hover:text-green-500 cursor-pointer transition-colors">
-                    <Repeat2 size={15} strokeWidth={1.5} /> 
-                    <span>{post.reposts_count || 0}</span>
-                  </div>
-                </div>
-
-                {/* Label "corpo da postagem" no canto direito */}
-                {post.body_label && (
-                  <span className="text-[11px] text-gray-300 italic">
-                    {post.body_label}
-                  </span>
-                )}
-              </div>
-
-            </div>
-          ))
+            )}
+          </div>
         )}
-      </div>
+      </section>
 
-      {/* ═══════ COLUNA LATERAL DIREITA — PROFESSORES + ANÚNCIOS ═══════ */}
-      <div className="hidden lg:block w-[280px] flex-shrink-0">
-        <div className="sticky top-[72px] space-y-4">
+      <div className="hidden min-w-0 lg:block">
+        <div className="sticky top-24">
           <Anuncios />
         </div>
       </div>
-
     </div>
   );
 }

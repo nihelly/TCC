@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Send, Search, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Send, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';

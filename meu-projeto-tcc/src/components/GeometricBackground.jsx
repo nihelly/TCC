@@ -47,7 +47,7 @@ export default function GeometricBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+    <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-[0.08]" style={{ zIndex: 0 }}>
       {/* Linhas de conexão (SVG) */}
       <svg
         className="absolute inset-0 w-full h-full"
@@ -60,7 +60,7 @@ export default function GeometricBackground() {
             key={i}
             x1={l[0]} y1={l[1]} x2={l[2]} y2={l[3]}
             className="mesh-line"
-            strokeWidth="0.07"
+            strokeWidth="0.055"
             style={{ opacity: l[4] }}
           />
         ))}
@@ -81,7 +81,7 @@ export default function GeometricBackground() {
               height: isEdge ? 4.5 : 3,
               borderRadius: '50%',
               transform: 'translate(-50%, -50%)',
-              opacity: isEdge ? 0.5 : 0.25,
+              opacity: isEdge ? 0.22 : 0.12,
             }}
           />
         );
