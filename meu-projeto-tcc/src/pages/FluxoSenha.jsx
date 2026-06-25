@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Mail, ShieldCheck, Lock, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
+import GeometricBackground from '../components/GeometricBackground';
 
 export default function FluxoSenha() {
   const navigate = useNavigate();
@@ -127,8 +128,9 @@ export default function FluxoSenha() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center p-4 animate-in fade-in duration-500">
-      <div className="w-full max-w-[440px] bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.015)] border border-gray-100 p-10 flex flex-col items-center">
+    <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center p-4 animate-in fade-in duration-500 relative">
+      <GeometricBackground />
+      <div className="relative z-10 w-full max-w-[440px] bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.015)] border border-gray-100 p-10 flex flex-col items-center">
         
         {/* ÍCONE CENTRAL MUDANDO DE ACORDO COM O PASSO */}
         <div className="text-gray-800 mb-6 bg-gray-50 p-4 rounded-full border border-gray-100/50">

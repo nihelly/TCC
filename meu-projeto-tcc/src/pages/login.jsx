@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
+import GeometricBackground from '../components/GeometricBackground';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -43,9 +44,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center p-4">
-      {/* DESIGN FIEL À FOTO ENVIADA */}
-      <div className="w-full max-w-[440px] bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.015)] border border-gray-100 p-10 flex flex-col items-center">
+    <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center p-4 relative">
+      <GeometricBackground />
+      {/* Card de login acima do fundo geométrico */}
+      <div className="relative z-10 w-full max-w-[440px] bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.015)] border border-gray-100 p-10 flex flex-col items-center">
         
         {/* Logo EduConnect */}
         <div className="mb-6">

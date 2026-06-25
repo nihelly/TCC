@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Shield, 
   Lock, 
@@ -27,7 +27,22 @@ export default function Configuracoes() {
   const [verificacaoDuasEtapas, setVerificacaoDuasEtapas] = useState(false);
   const [contaPrivada, setContaPrivada] = useState(false);
   const [ocultarAtividade, setOcultarAtividade] = useState(false);
-  const [modoNocturno, setModoNocturno] = useState(false);
+  const [modoNocturno, setModoNocturno] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('educonnect-dark-mode') === 'true';
+    }
+    return false;
+  });
+
+  // Efeito que aplica/remove a classe 'dark' no HTML e salva no localStorage
+  useEffect(() => {
+    if (modoNocturno) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('educonnect-dark-mode', String(modoNocturno));
+  }, [modoNocturno]);
   const [altoContraste, setAltoContraste] = useState(false);
   
   // Estado para o tamanho da fonte selecionada

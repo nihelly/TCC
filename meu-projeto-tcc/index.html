@@ -7,6 +7,12 @@
     <title>EduConnect</title>
   </head>
   <body>
+    <script>
+      // Anti-flash: aplica modo escuro antes da renderização
+      if (localStorage.getItem('educonnect-dark-mode') === 'true') {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
